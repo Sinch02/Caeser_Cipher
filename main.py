@@ -23,6 +23,9 @@ def vigenere(message, key, direction=1):
             final_message += alphabet[new_index]
     
     return final_message
+
+def encrypt(message, key):
+    pass
     
 encryption = vigenere(text, custom_key)
 print(encryption)
