@@ -8,7 +8,7 @@ def vigenere(message, key, direction=1):
 
     for char in message.lower():
     
-        # Append space to the message
+        # Append any non-letter character to the message
         if not char.isaplha():
             final_message += char
         else:        
