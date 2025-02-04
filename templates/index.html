@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vigenère Cipher</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #result {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Vigenère Cipher</h2>
+        <input type="text" id="text" placeholder="Enter text">
+        <input type="text" id="key" placeholder="Enter key">
+        <button onclick="sendData('encrypt')">Encrypt</button>
+        <button onclick="sendData('decrypt')">Decrypt</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        async function sendData(action) {
+            let text = document.getElementById("text").value;
+            let key = document.getElementById("key").value;
+
+            if (!text || !key) {
+                alert("Please enter both text and key!");
+                return;
+            }
+
+            let response = await fetch(`/${action}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text: text, key: key })
+            });
+
+            let data = await response.json();
+            document.getElementById("result").innerText = action === "encrypt" ? 
+                "Encrypted: " + data.result : 
+                "Decrypted: " + data.result;
+        }
+    </script>
+
+</body>
+</html>
