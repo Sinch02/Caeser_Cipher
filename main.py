@@ -2,39 +2,50 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-text = 'mrttaqrhknsw ih puggrur'
-custom_key = 'happycoding'
-
-def vigenere(message, key, direction=1):
+def vigenere_cipher(message, key, encrypt=True):
+    alphabet = "abcdefghijklmnopqrstuvwxyz"
+    final_message = ""
+    key = key.lower()
     key_index = 0
-    alphabet = 'abcdefghijklmnopqrstuvwxyz'
-    final_message = ''
 
     for char in message.lower():
-
-        # Append any non-letter character to the message
-        if not char.isalpha():
+        if char not in alphabet:
             final_message += char
-        else:        
-            # Find the right key character to encode/decode
-            key_char = key[key_index % len(key)]
-            key_index += 1
+            continue
 
-            # Define the offset and the encrypted/decrypted letter
-            offset = alphabet.index(key_char)
-            index = alphabet.find(char)
-            new_index = (index + offset*direction) % len(alphabet)
-            final_message += alphabet[new_index]
-    
+        key_char = key[key_index % len(key)]
+        key_offset = alphabet.index(key_char)
+        char_index = alphabet.index(char)
+
+        if encrypt:
+            new_index = (char_index + key_offset) % len(alphabet)
+        else:
+            new_index = (char_index - key_offset + len(alphabet)) % len(alphabet)
+
+        final_message += alphabet[new_index]
+        key_index += 1
+
     return final_message
 
-def encrypt(message, key):
-    return vigenere(message, key)
-    
-def decrypt(message, key):
-    return vigenere(message, key, -1)
+@app.route('/')
+def index():
+    return render_template('index.html')
 
-print(f'\nEncrypted text: {text}')
-print(f'Key: {custom_key}')
-decryption = decrypt(text, custom_key)
-print(f'\nDecrypted text: {decryption}\n')
+@app.route('/encrypt', methods=['POST'])
+def encrypt():
+    data = request.json
+    text = data.get("text", "")
+    key = data.get("key", "")
+    encrypted_text = vigenere_cipher(text, key, True)
+    return jsonify({"result": encrypted_text})
+
+@app.route('/decrypt', methods=['POST'])
+def decrypt():
+    data = request.json
+    text = data.get("text", "")
+    key = data.get("key", "")
+    decrypted_text = vigenere_cipher(text, key, False)
+    return jsonify({"result": decrypted_text})
+
+if __name__ == '__main__':
+    app.run(debug=True)
